@@ -1,6 +1,8 @@
 package jpabook.jpashop.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -35,6 +37,11 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;     //주문 상태[ORDER, CANCEL]
 
+    protected Order(){
+        //외부에서의 Order 객체 생성을 막기 위해 protected 키워드 사용
+        //Lombok의 @NoArgsConstructor(access = AccessLevel.PROTECTED)로 대체 가능
+   }
+
     //== 연관관계 메소드==//
     //양방향 매핑일 때 편의를 위해 작성하는 메소드
     public void setMember(Member member){
@@ -52,4 +59,43 @@ public class Order {
         delivery.setOrder(this);
     }
 
+
+    //==생성 메소드==//
+    //주문 생성은 여러 연관관계가 얽혀 있기 때문에 복잡하다.
+    //따라서 이를 담당하는 별도의 메소드를 두는 것이 좋다.
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for(OrderItem orderItem : orderItems){
+            order.addOrderItem(orderItem);
+        }
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+        return order;
+    }
+
+    //==비즈니스 로직==//
+    //주문 취소
+    public void cancel(){
+        if(delivery.getStatus() == DeliveryStatus.COMP){
+            throw new IllegalStateException("이미 배송 완료된 상품은 취소가 불가능합니다.");
+        }
+
+        this.setStatus(OrderStatus.CANCEL); //취소상태로 변환
+        //주문 상품목록의 각 상품들 Quantity를 원복
+        for(OrderItem orderItem : orderItems){
+            orderItem.cancel();
+        }
+    }
+
+    //==조회 로직==//
+    //전체 주문의 최종 가격을 확인
+    public int getTotalPrice(){
+        int totalPrice = 0;
+        for(OrderItem orderItem : orderItems){
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
+    }
 }
