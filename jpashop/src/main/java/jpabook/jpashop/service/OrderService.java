@@ -52,5 +52,6 @@ public class OrderService {
     }
 
 
-    //검색
+    //검색 : 동적 쿼리를 활용
+
 }

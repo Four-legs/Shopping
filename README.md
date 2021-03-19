@@ -6,7 +6,7 @@ Spring 프레임워크와 JPA의 개념을 숙지한 후, 이를 활용해 보�
 
 각 도메인들을 객체 지향에 걸맞게 설계해, 유지보수 및 확장에 용이하도록 한다.
 
-> ### 구현 목표 기능 (필수기능)
+ ### 구현 목표 기능 (필수기능)
   #
 
 - 상품 주문 / 상품 주문 취소
@@ -53,3 +53,20 @@ Spring 프레임워크와 JPA의 개념을 숙지한 후, 이를 활용해 보�
     - 이러한 방식을 도메인 모델 패턴(DDD)이라 함
     - 주문 취소 및 주문의 최종 가격을 구하는 메소드도 포함
 
+## 03.19
+- 주문하기, 주문 취소에 대한 테스트 코드 작성
+    - InvalidDataAccessApiUsingException이 발생해 테스트 실패
+    - 해당 예외는 book 객체를 EntityManager에 persist하지 않아 발생한 것으로 확인 (수정완료)
+    - JUnit5에서 assertEquals를 사용 
+        - import static org.junit.jupiter.api.Assertions.assertEquals; 필요
+- 재고 수량 초과 테스트 코드 작성
+    - 마찬가지로 JUnit5에서 assertThrows를 사용하기 위해
+        - import static org.junit.jupiter.api.Assertions.assertEquals;
+    - assertThrows(기대되는 예외 클래스, ()->{  
+        예외가 발생할 수 있는 로직 실행  
+    })
+- 주문 검색 기능 구현
+    - 검색 필터에 대한 OrderSearch 객체 구현 (현재 검색 기준은 회원 이름과 주문 상태만 존재)
+    - OrderRepository에 동적 쿼리를 사용해 쿼리 결과를 반환하도록 구현
+        - JPA Criteria 를 사용해 구현
+        - 사용하는 데 매우 불편해 QueryDSL을 익힌 후 코드를 수정할 것
