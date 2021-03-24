@@ -6,6 +6,13 @@ Spring 프레임워크와 JPA의 개념을 숙지한 후, 이를 활용해 보�
 
 각 도메인들을 객체 지향에 걸맞게 설계해, 유지보수 및 확장에 용이하도록 한다.
 
+### 사용된 언어 및 프레임워크
+#
+- JAVA
+- Spring / Spring Boot
+- JPA
+- Thymeleaf (웹 계층 템플릿 엔진)
+
  ### 구현 목표 기능 (필수기능)
   #
 
@@ -70,3 +77,50 @@ Spring 프레임워크와 JPA의 개념을 숙지한 후, 이를 활용해 보�
     - OrderRepository에 동적 쿼리를 사용해 쿼리 결과를 반환하도록 구현
         - JPA Criteria 를 사용해 구현
         - 사용하는 데 매우 불편해 QueryDSL을 익힌 후 코드를 수정할 것
+
+## 03.24
+- 웹 계층 구현 : Thymeleaf 사용
+    - 메인 화면 구현
+    - 회원 가입 화면
+        - Controller 내에서 @GetMapping 메소드를 통해, 해당 URL에서 띄울 view의 이름을 반환한다.
+        - Form 등으로 서버에 정보를 보낼 경우, 이 정보를 @PostMapping 메소드로 받는다.
+        - 이 때, 사용자가 입력한 Form에 대응하는 memberForm 객체를 따로 정의해서 사용했다.
+        - 엔티티 자체를 주고받는 것은 권장되지 않는 방법이므로 주의할 것.
+        - org.springframework.boot:spring-boot-starter-validation
+        - 위를 사용하면 @NotEmpty, @Valid 등을 통해 유효값 범위를 쉽게 조정할 수 있다.
+        - BindingResult 객체를 통해 Form 객체가 validation 조건을 만족하는지의 결과를 확인한다.
+    - 회원 목록 조회 화면
+        - 조회한 목록을 뷰에 전달하기 위해, Model 객체에 전달
+        ```java
+        public String list(Model model){
+            List<Member> members = memberService.findMembers();
+            model.addAttribute("members", members); //여기서 Model에 전달
+            return "members/memberList";
+        }
+        ```
+        - Thymeleaf 내에서 반복문 형태로 데이터들을 출력할 수 있음.
+        ```html
+        <tr th:each="member : ${members}">
+                <td th:text="${member.id}"></td>
+                <td th:text="${member.name}"></td>
+                <td th:text="${member.address?.city}"></td>
+                <td th:text="${member.address?.street}"></td>
+                <td th:text="${member.address?.zipcode}"></td>
+            </tr>
+        ```
+        - ?를 붙이면 null을 무시할 수 있다.
+        - 추후 리팩토링 시 이 부분도 따로 객체를 만들어 사용해보자.
+- Thymeleaf를 사용해 컨트롤러의 객체에 접근하기
+    ```html
+    <form th:object = "${memberForm}" method="post">
+    ```
+    - 객체 내 필드에 접근하기 
+        - 필드에 값 삽입
+        ```html
+        <input type="text" th:field="*{name}" class="form-control">
+        ```
+        - 필드의 값 참조
+        ```html
+        <td th:text="${member.name}"></td>
+        ```
+    - Thymeleaf 매뉴얼 등을 통해 자세한 내용을 숙지할 것.
