@@ -2,6 +2,7 @@ package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.dto.ItemUpdateDto;
 import jpabook.jpashop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,8 @@ public class ItemService {
     }
 
     @Transactional
-    public void updateItem(Long id, ItemUpdateDto itemUpdateDto){
-        Book item = (Book)itemRepository.findOne(id);
+    public void updateItem(ItemUpdateDto itemUpdateDto){
+        Book item = (Book)itemRepository.findOne(itemUpdateDto.getId());
         item.setName(itemUpdateDto.getName());
         item.setPrice(itemUpdateDto.getPrice());
         item.setStockQuantity(itemUpdateDto.getStockQuantity());

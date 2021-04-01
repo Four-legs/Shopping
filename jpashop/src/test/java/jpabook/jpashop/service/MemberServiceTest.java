@@ -1,6 +1,7 @@
 package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.exception.LoginFailureException;
 import jpabook.jpashop.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,55 @@ class MemberServiceTest {
             memberService.join(memberB);
         });
 
+    }
+
+    @Test
+    public void 로그인_성공() throws Exception{
+        //given
+        Member memberA = new Member();
+        memberA.setName("memberA");
+        memberA.setPassword("passwordA");
+
+        //when
+        memberService.join(memberA);
+
+        //then
+        assertEquals(memberA.getId(),
+                memberService.login("memberA", "passwordA"),
+                "로그인 정보가 올바르면 성공해야 함.");
+    }
+
+    @Test
+    public void 로그인_실패_없는아이디() throws Exception{
+        //given
+        Member memberA = new Member();
+        memberA.setName("memberA");
+        memberA.setPassword("passwordA");
+
+        //when
+        memberService.join(memberA);
+
+        //then
+        //존재하지 않는 아이디로 로그인 시 실패해야 함
+        assertThrows(LoginFailureException.class, ()->{
+            memberService.login("worngName", "passwordA");
+        });
+    }
+
+    @Test
+    public void 로그인_실패_틀린_비밀번호() throws Exception{
+        //given
+        Member memberA = new Member();
+        memberA.setName("memberA");
+        memberA.setPassword("passwordA");
+
+        //when
+        memberService.join(memberA);
+
+        //then
+        //존재하지 않는 아이디로 로그인 시 실패해야 함
+        assertThrows(LoginFailureException.class, ()->{
+            memberService.login("memberA", "wrongPassword");
+        });
     }
 }

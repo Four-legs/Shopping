@@ -2,6 +2,7 @@ package jpabook.jpashop.controller;
 
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.dto.ItemUpdateDto;
 import jpabook.jpashop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ public class ItemController {
 
     @PostMapping("items/{itemId}/edit")
     public String updateItem(@ModelAttribute("form") BookForm form){
-        //itemService.updateItem(form.getId(), );
+        itemService.updateItem(new ItemUpdateDto(form));
 
 
         return "redirect:/items";

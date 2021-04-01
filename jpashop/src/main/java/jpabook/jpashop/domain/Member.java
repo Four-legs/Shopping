@@ -16,7 +16,10 @@ public class Member {
     @Column(name="member_id")
     private Long id;
 
+    @Column(name="member_name", unique = true)
     private String name;
+
+    private String password;
 
     @Embedded
     private Address address;

@@ -142,3 +142,13 @@ Spring 프레임워크와 JPA의 개념을 숙지한 후, 이를 활용해 보�
     - 최초에는 merge 를 사용해 구현
     - DTO를 별도 구현해 변경 감지 기능 방식으로 구현해볼 것
     
+
+## 04.01
+ - 상품 수정 기능을 DTO를 사용해 구현함.
+ - 로그인 메소드 추가 (MemberService)
+    - Member 엔티티에 password 필드 추가
+    - Member 엔티티의 name 필드에 unique 속성 부여 (@Column(name="member_name", unique=true))
+    - 기존 MemberRepository의 findByName 메소드를 단일 결과를 반환하도록 수정 (getResultList() -> getSingleResult());
+    - 이 때 해당 Member 엔티티가 존재하지 않으면 NoResultException 발생 -> catch 후 null을 반환
+    - 아이디 및 비밀번호 오류 시 Repository에서 Member 객체를 반환하며, 이 경우 LoginFailureException 을 throw 하도록 구현
+    - 테스트 코드를 MemberServiceTest에 추가 (로그인 성공, 로그인 실패_없는 아이디, 로그인 실패_틀린 비밀번호)
